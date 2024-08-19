@@ -1,0 +1,22 @@
+{
+  
+  "singleQuote": true,
+  "trailingComma": "all",
+  "arrowParens": "avoid",
+  "tabWidth": 2,
+  "useTabs": false,
+  "bracketSpacing": true,
+  "bracketSameLine": true,
+  "semi": true,
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "htmlWhitespaceSensitivity": "ignore",
+        "bracketSameLine": false,
+        "singleQuote": false
+      }
+    }
+  ]
+}
