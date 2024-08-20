@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 const KELVIN_DEGREE = 273.15;
-const DECIMAL_PLACSES = 2;
+const DECIMAL_PLACES = 2;
 
 @Pipe({
   name: 'kelvinToCelsius',
@@ -9,6 +9,6 @@ const DECIMAL_PLACSES = 2;
 })
 export class KelvinToCelsiusPipe implements PipeTransform {
   transform(value: number): string {
-    return `${(value - KELVIN_DEGREE).toFixed(DECIMAL_PLACSES)}°`;
+    return `${(value - KELVIN_DEGREE).toFixed(DECIMAL_PLACES)}°`;
   }
 }
