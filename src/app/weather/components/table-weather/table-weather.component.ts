@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TableData } from '../../models/interfaces/table-data';
-import { FormatWeather } from '../../models/enums/format-wearher';
+import { FormatWeather } from '../../models/enums/format-weather';
 import { KelvinToCelsiusPipe } from '../../pipes/kelvin-to-celsius.pipe';
 
 @Component({

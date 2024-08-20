@@ -18,9 +18,9 @@ import { convertData } from '../helpers/convertData';
 export class WeatherDataService {
   private httpService = inject(HttpService);
 
-  private tableDate$ = new BehaviorSubject<TableData[]>([]);
+  private tableData$ = new BehaviorSubject<TableData[]>([]);
 
-  tableDatePublic$ = this.tableDate$.pipe();
+  tableDatePublic$ = this.tableData$.pipe();
 
   saveDate(cityName: string): Observable<void> {
     return this.httpService.getCity(cityName).pipe(
@@ -37,7 +37,7 @@ export class WeatherDataService {
       }),
       map(([name, daily, hourly]) => {
         const tableData = convertData(name, daily, hourly);
-        this.tableDate$.next(tableData);
+        this.tableData$.next(tableData);
       }),
     );
   }

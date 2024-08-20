@@ -7,6 +7,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WeatherDataService } from '../../services/weather-data.service';
+import { SearchStateService } from '../../services/search-state.service';
 
 @Component({
   selector: 'app-search-form',
@@ -23,8 +24,13 @@ export class SearchFormComponent {
 
   private destroyRef = inject(DestroyRef);
 
+  private searchStateService = inject(SearchStateService);
+
   searchCityForm = this.fb.nonNullable.group({
-    city: ['', [Validators.required, Validators.minLength(2)]],
+    city: [
+      this.searchStateService.getCurrentCityName,
+      [Validators.required, Validators.minLength(2)],
+    ],
   });
 
   get isFormValid() {
@@ -33,6 +39,7 @@ export class SearchFormComponent {
 
   searchCity() {
     if (this.searchCityForm.value.city) {
+      this.searchStateService.changeFormatCity(this.searchCityForm.value.city);
       this.weatherDataService
         .saveDate(this.searchCityForm.value.city)
         .pipe(takeUntilDestroyed(this.destroyRef))

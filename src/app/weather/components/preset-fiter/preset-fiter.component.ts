@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { SearchStateService } from '../../services/search-state.service';
 
 @Component({
   selector: 'app-preset-fiter',
@@ -17,11 +18,17 @@ export class PresetFiterComponent {
 
   private fb = inject(FormBuilder);
 
-  presetFilterForm = this.fb.group({
-    format: [this.formatWeather[0].value],
+  private searchStateService = inject(SearchStateService);
+
+  presetFilterForm = this.fb.nonNullable.group({
+    format: [this.searchStateService.getCurrentFormatWeather],
   });
 
   changeFormat() {
-    console.log(this.presetFilterForm.value);
+    if (this.presetFilterForm.value.format) {
+      this.searchStateService.changeFormatWeather(
+        this.presetFilterForm.value.format,
+      );
+    }
   }
 }
