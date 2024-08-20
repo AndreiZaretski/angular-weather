@@ -1,15 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { SearchFormComponent } from '../../components/search-form/search-form.component';
 import { PresetFiterComponent } from '../../components/preset-fiter/preset-fiter.component';
 import { TableWeatherComponent } from '../../components/table-weather/table-weather.component';
-import {
-  formatMock,
-  dataWeather,
-} from '../../components/table-weather/mockTableData';
+import { formatMock } from '../../components/table-weather/mockTableData';
 import { FormatWeather } from '../../models/enums/format-wearher';
 import { TableData } from '../../models/interfaces/table-data';
+import { WeatherDataService } from '../../services/weather-data.service';
 
 @Component({
   selector: 'app-weather',
@@ -25,9 +23,12 @@ import { TableData } from '../../models/interfaces/table-data';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherComponent {
+  private weatherDataService = inject(WeatherDataService);
+
   format$: Observable<FormatWeather> = formatMock;
 
-  tableData$: Observable<TableData[]> = dataWeather;
+  tableData$: Observable<TableData[]> =
+    this.weatherDataService.tableDatePublic$;
 
   constructor() {
     this.tableData$.subscribe(data => {

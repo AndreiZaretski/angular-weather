@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { WeatherDataService } from '../../services/weather-data.service';
 
 @Component({
   selector: 'app-search-form',
@@ -12,6 +19,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 export class SearchFormComponent {
   private fb = inject(FormBuilder);
 
+  private weatherDataService = inject(WeatherDataService);
+
+  private destroyRef = inject(DestroyRef);
+
   searchCityForm = this.fb.nonNullable.group({
     city: ['', [Validators.required, Validators.minLength(2)]],
   });
@@ -21,6 +32,11 @@ export class SearchFormComponent {
   }
 
   searchCity() {
-    console.log(this.searchCityForm.value);
+    if (this.searchCityForm.value.city) {
+      this.weatherDataService
+        .saveDate(this.searchCityForm.value.city)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe();
+    }
   }
 }

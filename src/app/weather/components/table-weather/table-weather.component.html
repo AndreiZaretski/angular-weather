@@ -1,6 +1,3 @@
-<!-- @let tableData = tableData$ | async;
-@let format = format$ | async; -->
-
 @if (tableData() && tableData()?.length && format()) {
   <table class="table-weather">
     <caption class="table-weather__caption">Погода в вашем городе</caption>
@@ -10,13 +7,13 @@
         @if (format() === formatWeather.Daily) {
           @for (item of tableData()?.[0]?.daily; track $index) {
             <th class="table-weather__ceil" scope="col">
-              {{ item.dt }}
+              {{ item.dt * 1000 | date: "EE" }}
             </th>
           }
         } @else if (format() === formatWeather.Hourly) {
           @for (item of tableData()?.[0]?.hourly; track $index) {
             <th class="table-weather__ceil" scope="col">
-              {{ item.dt }}
+              {{ item.dt * 1000 | date: "HH:mm" }}
             </th>
           }
         }
@@ -28,11 +25,15 @@
           <th class="table-weather__ceil" scope="row">{{ data.cityName }}</th>
           @if (format() === formatWeather.Daily) {
             @for (temp of data.daily; track $index) {
-              <td class="table-weather__ceil">{{ temp.temp }}</td>
+              <td class="table-weather__ceil">
+                {{ temp.temp | kelvinToCelsius }}
+              </td>
             }
           } @else if (format() === formatWeather.Hourly) {
             @for (temp of data.hourly; track $index) {
-              <td class="table-weather__ceil">{{ temp.temp }}</td>
+              <td class="table-weather__ceil">
+                {{ temp.temp | kelvinToCelsius }}
+              </td>
             }
           }
         </tr>

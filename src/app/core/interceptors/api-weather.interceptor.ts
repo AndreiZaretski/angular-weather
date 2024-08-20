@@ -5,7 +5,7 @@ export const apiWeatherInterceptor: HttpInterceptorFn = (req, next) => {
   const { apiKey } = environment;
   const newReq = req.clone({
     setParams: {
-      key: apiKey,
+      appid: apiKey,
     },
   });
   return next(newReq);
