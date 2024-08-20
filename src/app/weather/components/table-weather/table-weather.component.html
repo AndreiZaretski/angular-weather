@@ -1,1 +1,44 @@
-<p>table-weather works!</p>
+<!-- @let tableData = tableData$ | async;
+@let format = format$ | async; -->
+
+@if (tableData() && tableData()?.length && format()) {
+  <table class="table-weather">
+    <caption class="table-weather__caption">Погода в вашем городе</caption>
+    <thead class="table-weather__header">
+      <tr>
+        <th class="table-weather__ceil" scope="col">Город</th>
+        @if (format() === formatWeather.Daily) {
+          @for (item of tableData()?.[0]?.daily; track $index) {
+            <th class="table-weather__ceil" scope="col">
+              {{ item.dt }}
+            </th>
+          }
+        } @else if (format() === formatWeather.Hourly) {
+          @for (item of tableData()?.[0]?.hourly; track $index) {
+            <th class="table-weather__ceil" scope="col">
+              {{ item.dt }}
+            </th>
+          }
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of tableData(); track $index) {
+        <tr>
+          <th class="table-weather__ceil" scope="row">{{ data.cityName }}</th>
+          @if (format() === formatWeather.Daily) {
+            @for (temp of data.daily; track $index) {
+              <td class="table-weather__ceil">{{ temp.temp }}</td>
+            }
+          } @else if (format() === formatWeather.Hourly) {
+            @for (temp of data.hourly; track $index) {
+              <td class="table-weather__ceil">{{ temp.temp }}</td>
+            }
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+} @else {
+  <h2>Повашему запросу ничего не найдено. Повторите попытку.</h2>
+}

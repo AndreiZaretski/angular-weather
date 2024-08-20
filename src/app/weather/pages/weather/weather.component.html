@@ -1,1 +1,8 @@
-<p>weather works!</p>
+@let tableData = tableData$ | async;
+@let format = format$ | async;
+<app-search-form></app-search-form>
+<app-preset-fiter></app-preset-fiter>
+<app-table-weather
+  [format]="format"
+  [tableData]="tableData"
+></app-table-weather>
