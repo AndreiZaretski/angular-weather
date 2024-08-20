@@ -1,13 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WeatherDataService } from '../../services/weather-data.service';
-import { SearchStateService } from '../../services/search-state.service';
+import { noWhitespaceValidator } from '../../validators/no-whitespace';
 
 @Component({
   selector: 'app-search-form',
@@ -22,14 +16,10 @@ export class SearchFormComponent {
 
   private weatherDataService = inject(WeatherDataService);
 
-  private destroyRef = inject(DestroyRef);
-
-  private searchStateService = inject(SearchStateService);
-
   searchCityForm = this.fb.nonNullable.group({
     city: [
-      this.searchStateService.getCurrentCityName,
-      [Validators.required, Validators.minLength(2)],
+      this.weatherDataService.getCurrentCityName,
+      [Validators.required, Validators.minLength(2), noWhitespaceValidator],
     ],
   });
 
@@ -38,12 +28,10 @@ export class SearchFormComponent {
   }
 
   searchCity() {
-    if (this.searchCityForm.value.city) {
-      this.searchStateService.changeFormatCity(this.searchCityForm.value.city);
-      this.weatherDataService
-        .saveDate(this.searchCityForm.value.city)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe();
+    if (this.searchCityForm.valid && this.searchCityForm.value.city) {
+      this.weatherDataService.changeSearchCity(
+        this.searchCityForm.value.city.trim(),
+      );
     }
   }
 }

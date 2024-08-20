@@ -6,11 +6,13 @@ import {
   map,
   Observable,
   of,
+  shareReplay,
   switchMap,
 } from 'rxjs';
 import { HttpService } from './http.service';
 import { TableData } from '../models/interfaces/table-data';
 import { convertData } from '../helpers/convertData';
+import { LocalStorageService } from '../../core/services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,15 +20,30 @@ import { convertData } from '../helpers/convertData';
 export class WeatherDataService {
   private httpService = inject(HttpService);
 
-  private tableData$ = new BehaviorSubject<TableData[]>([]);
+  private localStorageService = inject(LocalStorageService);
 
-  tableDatePublic$ = this.tableData$.pipe();
+  private searchCity$ = new BehaviorSubject<string>(
+    this.localStorageService.getItem('city') ?? '',
+  );
 
-  saveDate(cityName: string): Observable<void> {
-    return this.httpService.getCity(cityName).pipe(
+  tableDate$: Observable<TableData[]>;
+
+  constructor() {
+    this.tableDate$ = this.saveDate();
+  }
+
+  get getCurrentCityName() {
+    return this.searchCity$.getValue();
+  }
+
+  private saveDate(): Observable<TableData[]> {
+    return this.searchCity$.pipe(
+      switchMap(cityName =>
+        cityName ? this.httpService.getCity(cityName) : EMPTY,
+      ),
       switchMap(result => {
         if (!result || !result.length) {
-          return EMPTY;
+          return of([]);
         }
         const { lat, lon, name } = result[0];
         return forkJoin([
@@ -36,9 +53,18 @@ export class WeatherDataService {
         ]);
       }),
       map(([name, daily, hourly]) => {
+        if (!name || !daily || !hourly) {
+          return [];
+        }
         const tableData = convertData(name, daily, hourly);
-        this.tableData$.next(tableData);
+        return tableData;
       }),
+      shareReplay(1),
     );
+  }
+
+  changeSearchCity(cityName: string) {
+    this.localStorageService.setItem('city', cityName);
+    this.searchCity$.next(cityName);
   }
 }
