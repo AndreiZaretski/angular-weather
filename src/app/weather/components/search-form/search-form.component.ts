@@ -1,5 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { WeatherDataService } from '../../services/weather-data.service';
 import { noWhitespaceValidator } from '../../validators/no-whitespace';
 
@@ -11,14 +19,20 @@ import { noWhitespaceValidator } from '../../validators/no-whitespace';
   styleUrl: './search-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchFormComponent {
+export class SearchFormComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   private weatherDataService = inject(WeatherDataService);
 
+  private activatedRoute = inject(ActivatedRoute);
+
+  private router = inject(Router);
+
+  private destroyRef = inject(DestroyRef);
+
   searchCityForm = this.fb.nonNullable.group({
     city: [
-      this.weatherDataService.getCurrentCityName,
+      '',
       [Validators.required, Validators.minLength(2), noWhitespaceValidator],
     ],
   });
@@ -29,9 +43,25 @@ export class SearchFormComponent {
 
   searchCity() {
     if (this.searchCityForm.valid && this.searchCityForm.value.city) {
-      this.weatherDataService.changeSearchCity(
-        this.searchCityForm.value.city.trim(),
-      );
+      const queryParams: Params = { city: this.searchCityForm.value.city };
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams,
+        queryParamsHandling: 'merge',
+      });
     }
+  }
+
+  ngOnInit() {
+    this.activatedRoute.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(params => {
+        if (params['city']) {
+          this.searchCityForm.patchValue({
+            city: params['city'],
+          });
+          this.weatherDataService.changeSearchCity(params['city']);
+        }
+      });
   }
 }

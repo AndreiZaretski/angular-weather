@@ -12,7 +12,6 @@ import {
 import { HttpService } from './http.service';
 import { TableData } from '../models/interfaces/table-data';
 import { convertData } from '../helpers/convertData';
-import { LocalStorageService } from '../../core/services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,20 +19,12 @@ import { LocalStorageService } from '../../core/services/local-storage.service';
 export class WeatherDataService {
   private httpService = inject(HttpService);
 
-  private localStorageService = inject(LocalStorageService);
-
-  private searchCity$ = new BehaviorSubject<string>(
-    this.localStorageService.getItem('city') ?? '',
-  );
+  private searchCity$ = new BehaviorSubject<string>('');
 
   tableDate$: Observable<TableData[]>;
 
   constructor() {
     this.tableDate$ = this.saveDate();
-  }
-
-  get getCurrentCityName() {
-    return this.searchCity$.getValue();
   }
 
   private saveDate(): Observable<TableData[]> {
@@ -64,7 +55,6 @@ export class WeatherDataService {
   }
 
   changeSearchCity(cityName: string) {
-    this.localStorageService.setItem('city', cityName);
     this.searchCity$.next(cityName);
   }
 }
