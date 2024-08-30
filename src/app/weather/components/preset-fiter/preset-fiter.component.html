@@ -1,0 +1,11 @@
+<form [formGroup]="presetFilterForm">
+  <label for="format-select">Отображать по:</label>
+
+  <select id="format-select" formControlName="format" (change)="changeFormat()">
+    @for (item of formatWeather; track $index) {
+      <option [value]="item.value">
+        {{ item.name }}
+      </option>
+    }
+  </select>
+</form>

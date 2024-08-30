@@ -1,0 +1,44 @@
+@if (tableData() && tableData()?.length && format()) {
+  <table class="table-weather">
+    <thead class="table-weather__header">
+      <tr>
+        <th class="table-weather__ceil" scope="col">Город</th>
+        @if (format() === formatWeather.Daily) {
+          @for (item of tableData()?.[0]?.daily; track $index) {
+            <th class="table-weather__ceil" scope="col">
+              {{ item.dt * 1000 | date: "EE" }}
+            </th>
+          }
+        } @else if (format() === formatWeather.Hourly) {
+          @for (item of tableData()?.[0]?.hourly; track $index) {
+            <th class="table-weather__ceil" scope="col">
+              {{ item.dt * 1000 | date: "HH:mm" }}
+            </th>
+          }
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (data of tableData(); track $index) {
+        <tr>
+          <th class="table-weather__ceil" scope="row">{{ data.cityName }}</th>
+          @if (format() === formatWeather.Daily) {
+            @for (temp of data.daily; track $index) {
+              <td class="table-weather__ceil">
+                {{ temp.temp | kelvinToCelsius }}
+              </td>
+            }
+          } @else if (format() === formatWeather.Hourly) {
+            @for (temp of data.hourly; track $index) {
+              <td class="table-weather__ceil">
+                {{ temp.temp | kelvinToCelsius }}
+              </td>
+            }
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+} @else {
+  <h2>Повашему запросу ничего не найдено. Повторите попытку.</h2>
+}

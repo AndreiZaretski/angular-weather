@@ -1,0 +1,5 @@
+<form [formGroup]="searchCityForm" class="form" (submit)="searchCity()">
+  <label for="city">Введите город:</label>
+  <input formControlName="city" id="city" />
+  <button [disabled]="isFormValid" type="submit">Найти</button>
+</form>
